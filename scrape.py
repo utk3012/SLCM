@@ -84,21 +84,24 @@ def marks():
 		marks = []
 		for sub in subj:
 			vals = {}
-			vals['Subject'] = sub[0]
+			vals['subject'] = sub[0]
 			subDiv = soup.find("div", id=sub[1].replace(' ',''))
 			subTd = subDiv.find_all("td")
 			if not subTd:
 				vals['avl'] = False
 			else:
 				vals['avl'] = True
-			vals['Marks'] = []
+			vals['marks'] = []
 			for ind, cell in enumerate(subTd):
-				vals['Marks'].append(cell.string)
+				if 'lab' not in sub[0].lower() and ind % 3 not in [0, 1]:
+					vals['marks'].append(cell.string)
+				if 'lab' in sub[0].lower() and ind % 3 != 1:
+					vals['marks'].append(cell.string)
 			marks.append(vals)
 	except:
 		return (jsonify({"msg": "Cannot access SLCM at the moment. Try again later!", "success": 0}), 200)
 	else:
-		return (jsonify({"marks": marks}), 200)
+		return (jsonify({"marksData": marks}), 200)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=3000)
+    app.run(debug=True)
